@@ -13,11 +13,9 @@ syms s
 
 G_11 = poly2sym(cell2mat(G.Numerator(1, 1)), s) / poly2sym(cell2mat(G.Denominator(1, 1)), s);
 G_12 = poly2sym(cell2mat(G.Numerator(1, 2)), s) / poly2sym(cell2mat(G.Denominator(1, 2)), s);
-G_13 = poly2sym(cell2mat(G.Numerator(1, 3)), s) / poly2sym(cell2mat(G.Denominator(1, 3)), s);
 G_21 = poly2sym(cell2mat(G.Numerator(2, 1)), s) / poly2sym(cell2mat(G.Denominator(2, 1)), s);
 G_22 = poly2sym(cell2mat(G.Numerator(2, 2)), s) / poly2sym(cell2mat(G.Denominator(2, 2)), s);
-G_23 = poly2sym(cell2mat(G.Numerator(2, 3)), s) / poly2sym(cell2mat(G.Denominator(2, 3)), s);
-G_sym = [G_11 G_12 G_13; G_21 G_22 G_23];
+G_sym = [G_11 G_12; G_21 G_22];
 
 RGA = G_sym .* pinv(G_sym)';
 
@@ -36,9 +34,9 @@ G = tf(FWT(:, 1:2));
 
 s = tf('s');
 
-w_B = 0.3*2*pi;   % Bandwidth
-atn = 10e-5; % Attenuation
-M = 3;       % H_inf norm bound
+w_B = 0.3*2*pi; % Bandwidth
+atn = 10e-5;    % Attenuation
+M = 3;          % H_inf norm bound
 
 Wp11 = ((s / M) + w_B) / (s + (w_B * atn));
 
@@ -46,7 +44,7 @@ Wp = [Wp11, 0; ...
        0,   0.2];
 
 Wu = [0.01,  0,                                                      ; ...
-      0,    (5e-3 * s^2 + 7e-4 * s + 5e-5) / (s^2 + 14e-4 * s + 10-6)];
+      0,    (5e-3 * s^2 + 7e-4 * s + 5e-5) / (s^2 + 14e-4 * s + 10^-6)];
       %0,     0,                                                        0];
 
 Wt = [];
@@ -62,32 +60,26 @@ w = logspace(-3, 3, 1001) * 2 * pi;
 
 % Plotting
 f1 = figure(1);
-tiled1 = tiledlayout(f1, 2, 1, 'TileSpacing', 'compact', 'Padding', 'none');
 
 % Gain plot
-nexttile(tiled1);
 p1 = semilogx(w, squeeze(mag_Si(1, 1, :)), 'color', [0.8500 0.3250 0.0980]); % Plant dynamics
 hold on
 p2 = semilogx(w, squeeze(mag_Wp(1, 1, :)), 'color', [0.9290 0.6940 0.1250]); % Controller dynamics
 yline(0, ':', 'color', [0, 0, 0] + 0.25); % Zero gain line
 xlim([w(1), w(end)])
-ylim([-0.5, 1.5]);
-legend('|S|', '|1/Wp|');
-
-nexttile(tiled1);
-p1 = semilogx(w, squeeze(mag_Wu(1, 1, :)), 'color', [0.8500 0.3250 0.0980]); % Plant dynamics
-hold on
-%p2 = semilogx(w, squeeze(mag_Wp(1, 1, :)), 'color', [0.9290 0.6940 0.1250]); % Controller dynamics
-yline(0, ':', 'color', [0, 0, 0] + 0.25); % Zero gain line
-xlim([w(1), w(end)])
-ylim([0, 2]);
-legend('|WpS|');
-hold off
+ylim([-0.5, 3.5]);
+legend('|S|_{11}', '|1/Wp|_{11}');
+title("Sensitivity Function Vs. Weighting")
+xlabel("Frequency (rad/s)")
+ylabel("|Magnitude|")
+%exportgraphics(gcf, 'images/SC42145_q2_4_sense.png', 'Resolution', 600)
 
 hinfnorm(S)
 
 figure(2)
 sigma(S)
+xlabel("Frequency (rad/s)")
+%exportgraphics(gcf, 'images/SC42145_q2_4_sigma.png', 'Resolution', 600)
 
 %% Question 2.5
 
@@ -124,6 +116,12 @@ gen_nyq = gen_nyq_arg(1, 1) * gen_nyq_arg(2, 2) - gen_nyq_arg(1, 2) * gen_nyq_ar
 
 figure(3)
 nyquist(gen_nyq)
+xlim([0 15])
+ylim([-10 10])
+hold on
+plot(1, 0, 'r*');
+hold off
+%exportgraphics(gcf, 'images/SC42145_q2_7_nyq.png', 'Resolution', 600)
 
 %% Question 2.8
 
@@ -146,3 +144,5 @@ P = minreal(P);
 
 figure(4)
 step(P)
+%exportgraphics(gcf, 'images/SC42145_q2_8_step.png', 'Resolution', 600)
+

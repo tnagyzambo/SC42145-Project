@@ -16,12 +16,12 @@ G_p = -1 * tf(sys_siso);
 %% Question 1.3
 s = tf('s');
 
-k_p = 0.15;
+k_p = 0.01;
 tau_i = 0.6;
 
-C_pi = k_p * (tau_i * s + 1) / (tau_i *s);
+C_pi = k_p; %* (tau_i * s + 1) / (tau_i *s);
 
-G_c = C_pi;
+G_c = tf(C_pi);
 sys_open = series(G_c, G_p);
 y_r = feedback(sys_open, 1);
 c_r = G_c / (1 + G_p * G_c);
@@ -55,8 +55,8 @@ w_gc = w_cp;
 w_pc = w_cg;
 
 % Time constants
-g_tau_i = [1 / tau_i, interp1(w, mag_db_c, 1 / tau_i)];
-p_tau_i = [1 / tau_i, interp1(w, phase_c, 1 / tau_i)];
+%g_tau_i = [1 / tau_i, interp1(w, mag_db_c, 1 / tau_i)];
+%p_tau_i = [1 / tau_i, interp1(w, phase_c, 1 / tau_i)];
 
 % Plotting
 f1 = figure(1);
@@ -94,8 +94,8 @@ if ~isnan(w_pc)
     text(w_pc, -gm / 2, 'GM ', 'VerticalAlignment', 'middle', 'HorizontalAlignment', 'right', 'FontSize', 6)
 end
 
-plot(g_tau_i(1), g_tau_i(2), 'k.')
-text(g_tau_i(1), g_tau_i(2), '\tau_{I}', 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'center')
+%plot(g_tau_i(1), g_tau_i(2), 'k.')
+%text(g_tau_i(1), g_tau_i(2), '\tau_{I}', 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'center')
 
 hold off
 legend([p1(1), p2(1), p3(1)], 'Plant', 'Controller', 'System');
@@ -124,8 +124,8 @@ if ~isnan(w_pc)
     semilogx(w_pc, 180, '.', 'color', [0, 0, 0] + 0.25);
 end
 
-plot(p_tau_i(1), p_tau_i(2), 'k.')
-text(p_tau_i(1), p_tau_i(2), '\tau_{I}', 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'center')
+%plot(p_tau_i(1), p_tau_i(2), 'k.')
+%text(p_tau_i(1), p_tau_i(2), '\tau_{I}', 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'center')
 hold off
 
 ylabel('Phase (°)');
